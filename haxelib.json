@@ -1,0 +1,14 @@
+{
+    "name": "zenflo-emitter",
+    "url": "https://github.com/zenturi/zenflo-emitter",
+    "license": "MIT",
+    "tags": ["haxe", "js", "event", "emitter"],
+    "description": "Event emitter for zenflo",
+    "classPath": "src",
+    "version": "0.0.1",
+    "releasenote": "alpha",
+    "contributors": ["darmie"],
+    "dependencies": {
+        "RxHaxe": ""
+    }
+}
