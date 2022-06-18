@@ -1,4 +1,11 @@
--C src
+-cp src
+-cp spec
 
--L RxHaxe
--L hx3compat
+--main TestEvent
+
+-L signals
+-L buddy
+# -L RxHaxe
+# -L hx3compat
+
+--interp

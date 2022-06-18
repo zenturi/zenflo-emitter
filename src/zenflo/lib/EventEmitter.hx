@@ -1,10 +1,8 @@
 package zenflo.lib;
 
 // import hx.concurrent.Future.FutureResult;
-import haxe.CallStack;
 import haxe.ds.Map;
-import rx.Subject;
-import rx.Observer;
+import signals.Signal1;
 
 using StringTools;
 
@@ -12,17 +10,15 @@ using StringTools;
  * Todo: This Event emitter implementation is not perfect. It doesn't work for nested listeners. 
  * [NEED A FIX]
  */
-typedef SubjectMap = {subject:Subject<Array<Any>>, once:Bool, handler:(data:Array<Any>) -> Void};
+// typedef SubjectMap = {subject:Subject<Array<Any>>, once:Bool, handler:(data:Array<Any>) -> Void};
 
 class EventEmitter {
-	var subjects:Map<String, Array<SubjectMap>>;
 
-	var listeners:Map<String, Array<(data:Array<Any>) -> Void>>;
+	var subjects:Map<String, Signal1<Array<Any>>> = new Map();
 
-	public function new() {
-		subjects = new Map<String, Array<SubjectMap>>();
-		listeners = new Map();
-	}
+	var listeners:Map<String, Array<(data:Array<Any>) -> Void>> = new Map();
+
+	public function new() {}
 
 	function createName(name:String) {
 		return '$ ${name}';
@@ -31,36 +27,25 @@ class EventEmitter {
 	public function emit(name:String, data:haxe.Rest<Any>) {
 		final fnName = createName(name);
 		if (this.subjects.exists(fnName)) {
-			#if sys sys.thread.Thread.runWithEventLoop(()->{ #end
-					final x = [for (v in data) v];
-					final fs = this.subjects.get(fnName);
-					Lambda.iter(fs, (f)-> {
-						f.subject.on_next(x);
-						if (f.once) {
-							f.subject.unsubscribe();
-							fs.remove(f);
-							Lambda.iter(this.listeners.get(fnName), (l) -> {
-								if (l == f.handler) {
-									this.listeners.get(fnName).remove(l);
-								}
-							});
-						}
-					});
-			#if sys }); #end
+			final x = [for (v in data) v];
+			final fs = this.subjects.get(fnName);
+			fs.dispatch(x);
+
+
 		}
 	}
 
 	public function on(name:String, handler:(data:Array<Any>) -> Void, once:Bool = false) {
 		final fnName = createName(name);
 		if (!this.subjects.exists(fnName)) {
-			this.subjects.set(fnName, [{subject: Subject.create(), once: once, handler: handler}]);
+			this.subjects.set(fnName, new Signal1());
 		}
-		if (!this.listeners.exists(fnName))
-			listeners.set(fnName, []);
+		
 		final fs = this.subjects.get(fnName);
-		final sub = Subject.create();
-		sub.subscribe(Observer.create(null, null, handler));
-		fs.unshift({subject: sub, once: once, handler: handler});
+		fs.add(handler, once);
+		if(!this.listeners.exists(fnName)) {
+			listeners.set(fnName, []);
+		}
 		listeners.get(fnName).unshift(handler);
 	}
 
@@ -69,10 +54,8 @@ class EventEmitter {
 	}
 
 	public function removeAllListeners() {
-		for (k => v in this.subjects) {
-			Lambda.iter(v, (f) -> {
-				f.subject.unsubscribe();
-			});
+		for (k => v in this.listeners) {
+			this.subjects.get(k).remove(true);
 		}
 		this.subjects.clear();
 	}
@@ -81,12 +64,7 @@ class EventEmitter {
 		final fnName = createName(name);
 		if (this.subjects.exists(fnName)) {
 			final fs = this.subjects[fnName];
-			Lambda.iter(fs, (f) -> {
-				if (f.handler == handler) {
-					f.subject.unsubscribe();
-					fs.remove(f);
-				}
-			});
+			fs.remove(handler);
 		}
 	}
 
