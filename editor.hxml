@@ -8,4 +8,7 @@
 # -L RxHaxe
 # -L hx3compat
 
---interp
+# --interp
+
+--cpp bin/cpp
+--cmd bin/cpp/TestEvent
