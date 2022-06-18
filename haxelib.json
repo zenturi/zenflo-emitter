@@ -5,7 +5,7 @@
     "tags": ["haxe", "js", "event", "emitter"],
     "description": "Event emitter for zenflo",
     "classPath": "src",
-    "version": "0.0.2",
+    "version": "0.0.3",
     "releasenote": "alpha",
     "contributors": ["darmie"],
     "dependencies": {

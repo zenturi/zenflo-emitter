@@ -30,8 +30,6 @@ class EventEmitter {
 			final x = [for (v in data) v];
 			final fs = this.subjects.get(fnName);
 			fs.dispatch(x);
-
-
 		}
 	}
 
@@ -55,7 +53,9 @@ class EventEmitter {
 
 	public function removeAllListeners() {
 		for (k => v in this.listeners) {
-			this.subjects.get(k).remove(true);
+			final fs = this.subjects.get(k);
+			if(fs != null)
+				fs.remove(true);
 		}
 		this.subjects.clear();
 	}
@@ -64,7 +64,8 @@ class EventEmitter {
 		final fnName = createName(name);
 		if (this.subjects.exists(fnName)) {
 			final fs = this.subjects[fnName];
-			fs.remove(handler);
+			if(fs != null)
+				fs.remove(handler);
 		}
 	}
 
