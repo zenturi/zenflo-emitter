@@ -40,7 +40,7 @@ class EventEmitter {
 		}
 		
 		final fs = this.subjects.get(fnName);
-		fs.add(handler, once);
+		fs.add(handler).repeat(once ? 1 : -1);
 		if(!this.listeners.exists(fnName)) {
 			listeners.set(fnName, []);
 		}

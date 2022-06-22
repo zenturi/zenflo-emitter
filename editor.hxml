@@ -10,5 +10,5 @@
 
 # --interp
 
---cpp bin/cpp
---cmd bin/cpp/TestEvent
+# --cpp bin/cpp
+# --cmd bin/cpp/TestEvent

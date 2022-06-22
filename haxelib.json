@@ -5,8 +5,8 @@
     "tags": ["haxe", "js", "event", "emitter"],
     "description": "Event emitter for zenflo",
     "classPath": "src",
-    "version": "0.0.3",
-    "releasenote": "alpha",
+    "version": "0.0.4",
+    "releasenote": "alpha - use repeat instead of fireOnce",
     "contributors": ["darmie"],
     "dependencies": {
         "signals": "1.3.2"
